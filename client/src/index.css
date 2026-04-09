@@ -1,0 +1,629 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+/* ============================================
+   FAST&TECH DESIGN SYSTEM - NEON CYBERPUNK
+   Paleta:
+   - Fundo base: #0d0b1e (azul-roxo profundo)
+   - Roxo vibrante: #4a2d7d
+   - Azul neon: #00d9ff
+   - Rosa/Magenta neon: #d400ff / #ff00c8
+   - Amarelo ouro: #ffd700
+   Inspiração: Background neon com setas geométricas
+   ============================================ */
+
+:root {
+  --roxo-base: #0d0b1e;
+  --roxo-medio: #1a1040;
+  --roxo-vibrante: #4a2d7d;
+  --azul-neon: #00d9ff;
+  --rosa-neon: #d400ff;
+  --magenta-neon: #ff00c8;
+  --amarelo-ouro: #ffd700;
+  --branco: #ffffff;
+  --cinza-claro: #e2e0f0;
+
+  --primary: oklch(0.55 0.28 265);
+  --primary-foreground: oklch(0.98 0 0);
+  --radius: 0.75rem;
+  --background: oklch(0.1 0.04 280);
+  --foreground: oklch(0.95 0.01 280);
+  --card: oklch(0.14 0.05 280);
+  --card-foreground: oklch(0.95 0.01 280);
+  --popover: oklch(0.14 0.05 280);
+  --popover-foreground: oklch(0.95 0.01 280);
+  --secondary: oklch(0.2 0.06 280);
+  --secondary-foreground: oklch(0.85 0.02 280);
+  --muted: oklch(0.18 0.04 280);
+  --muted-foreground: oklch(0.65 0.04 280);
+  --accent: oklch(0.22 0.08 280);
+  --accent-foreground: oklch(0.95 0.01 280);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 10%);
+  --ring: oklch(0.7 0.25 265);
+  --sidebar: oklch(0.12 0.05 280);
+  --sidebar-foreground: oklch(0.95 0.01 280);
+  --sidebar-accent: oklch(0.18 0.06 280);
+  --sidebar-accent-foreground: oklch(0.95 0.01 280);
+  --sidebar-border: oklch(1 0 0 / 8%);
+  --sidebar-ring: oklch(0.7 0.25 265);
+  --chart-1: oklch(0.7 0.25 265);
+  --chart-2: oklch(0.65 0.28 320);
+  --chart-3: oklch(0.8 0.2 80);
+  --chart-4: oklch(0.6 0.3 290);
+  --chart-5: oklch(0.75 0.22 200);
+}
+
+.dark {
+  /* Dark theme is the default */
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    background-color: var(--roxo-base);
+    font-family: 'Montserrat', 'Inter', sans-serif;
+  }
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [type="button"]:not(:disabled),
+  [type="submit"]:not(:disabled),
+  [type="reset"]:not(:disabled),
+  a[href],
+  select:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled) {
+    @apply cursor-pointer;
+  }
+}
+
+@layer components {
+  .container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .flex {
+    min-height: 0;
+    min-width: 0;
+  }
+
+  @media (min-width: 640px) {
+    .container {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container {
+      padding-left: 2rem;
+      padding-right: 2rem;
+      max-width: 1280px;
+    }
+  }
+
+  /* ============================================
+     NEON BACKGROUND SYSTEM
+     Usa o background de setas neon como padrão
+  ============================================ */
+  
+  .bg-neon-arrows {
+    background-image: url('https://d2xsxph8kpxj0f.cloudfront.net/310419663028305329/hZ8vj7HYLVBd9XsVXHD4zU/3627129_e65008a3.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .bg-neon-overlay {
+    background-image: url('https://d2xsxph8kpxj0f.cloudfront.net/310419663028305329/hZ8vj7HYLVBd9XsVXHD4zU/3627129_e65008a3.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+  }
+
+  .bg-neon-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(13, 11, 30, 0.75);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ============================================
+     BUTTONS
+  ============================================ */
+
+  .btn-neon {
+    padding: 0.75rem 1.75rem;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.03em;
+    transition: all 0.3s ease-out;
+    border: 2px solid var(--azul-neon);
+    color: var(--branco);
+    background: transparent;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    display: inline-block;
+    text-transform: uppercase;
+  }
+
+  .btn-neon::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .btn-neon:hover {
+    box-shadow: 0 0 25px rgba(0, 217, 255, 0.5), inset 0 0 15px rgba(0, 217, 255, 0.1);
+    border-color: var(--rosa-neon);
+  }
+
+  .btn-neon:hover::before {
+    left: 100%;
+  }
+
+  .btn-neon-primary {
+    background: linear-gradient(135deg, #0099cc, var(--azul-neon));
+    border-color: var(--azul-neon);
+    color: #fff;
+    font-weight: 700;
+    padding: 0.75rem 1.75rem;
+    border-radius: 0.5rem;
+    border: 2px solid var(--azul-neon);
+    cursor: pointer;
+    display: inline-block;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-size: 0.9rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-neon-primary:hover {
+    box-shadow: 0 0 30px rgba(0, 217, 255, 0.7), 0 0 60px rgba(0, 217, 255, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .btn-neon-secondary {
+    background: linear-gradient(135deg, #aa00cc, var(--rosa-neon));
+    border-color: var(--rosa-neon);
+    color: var(--branco);
+    font-weight: 700;
+    padding: 0.75rem 1.75rem;
+    border-radius: 0.5rem;
+    border: 2px solid var(--rosa-neon);
+    cursor: pointer;
+    display: inline-block;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-size: 0.9rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-neon-secondary:hover {
+    box-shadow: 0 0 30px rgba(212, 0, 255, 0.7), 0 0 60px rgba(212, 0, 255, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .btn-neon-gold {
+    background: linear-gradient(135deg, #cc9900, var(--amarelo-ouro));
+    border-color: var(--amarelo-ouro);
+    color: #0d0b1e;
+    font-weight: 800;
+    padding: 0.75rem 1.75rem;
+    border-radius: 0.5rem;
+    border: 2px solid var(--amarelo-ouro);
+    cursor: pointer;
+    display: inline-block;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-size: 0.9rem;
+  }
+
+  .btn-neon-gold:hover {
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.7), 0 0 60px rgba(255, 215, 0, 0.3);
+    transform: translateY(-2px);
+  }
+
+  /* ============================================
+     CARDS
+  ============================================ */
+
+  .card-neon {
+    background: rgba(20, 12, 50, 0.7);
+    border: 1px solid rgba(0, 217, 255, 0.2);
+    border-radius: 1rem;
+    padding: 2rem;
+    transition: all 0.35s ease-out;
+    backdrop-filter: blur(12px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-neon::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--azul-neon), var(--rosa-neon));
+    opacity: 0.6;
+  }
+
+  .card-neon:hover {
+    border-color: rgba(0, 217, 255, 0.5);
+    box-shadow: 0 0 30px rgba(0, 217, 255, 0.15), 0 0 60px rgba(212, 0, 255, 0.08);
+    transform: translateY(-6px);
+  }
+
+  .card-neon-gold {
+    background: rgba(20, 12, 50, 0.7);
+    border: 1px solid rgba(255, 215, 0, 0.25);
+    border-radius: 1rem;
+    padding: 2rem;
+    transition: all 0.35s ease-out;
+    backdrop-filter: blur(12px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-neon-gold::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--amarelo-ouro), var(--rosa-neon));
+    opacity: 0.7;
+  }
+
+  .card-neon-gold:hover {
+    border-color: rgba(255, 215, 0, 0.5);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.15), 0 0 60px rgba(212, 0, 255, 0.08);
+    transform: translateY(-6px);
+  }
+
+  /* ============================================
+     NEON DIVIDER
+  ============================================ */
+
+  .neon-divider {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--azul-neon), var(--rosa-neon), transparent);
+    margin: 2rem 0;
+  }
+
+  .neon-divider-gold {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--amarelo-ouro), var(--rosa-neon), transparent);
+    margin: 2rem 0;
+  }
+
+  /* ============================================
+     MASCOTE HELPERS
+  ============================================ */
+
+  .mascote-float {
+    animation: mascoteFloat 3s ease-in-out infinite;
+  }
+
+  .mascote-float-delayed {
+    animation: mascoteFloat 3s ease-in-out infinite;
+    animation-delay: 1.5s;
+  }
+
+  @keyframes mascoteFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); }
+  }
+
+  .mascote-bounce {
+    animation: mascoteBounce 2s ease-in-out infinite;
+  }
+
+  @keyframes mascoteBounce {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    25% { transform: translateY(-8px) rotate(-2deg); }
+    75% { transform: translateY(-4px) rotate(2deg); }
+  }
+
+  /* Mascote crop helpers - mostrar apenas parte da imagem */
+  .mascote-crop-tech {
+    object-fit: cover;
+    object-position: 0% 0%;
+  }
+
+  .mascote-crop-security {
+    object-fit: cover;
+    object-position: 100% 0%;
+  }
+
+  .mascote-crop-shopping {
+    object-fit: cover;
+    object-position: 0% 100%;
+  }
+
+  .mascote-crop-ai {
+    object-fit: cover;
+    object-position: 100% 100%;
+  }
+
+  /* ============================================
+     ANIMATIONS
+  ============================================ */
+
+  .fade-in {
+    animation: fadeInUp 0.7s ease-out forwards;
+    opacity: 0;
+  }
+
+  .fade-in-delay-1 { animation-delay: 0.15s; }
+  .fade-in-delay-2 { animation-delay: 0.3s; }
+  .fade-in-delay-3 { animation-delay: 0.45s; }
+  .fade-in-delay-4 { animation-delay: 0.6s; }
+  .fade-in-delay-5 { animation-delay: 0.75s; }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .slide-in-left {
+    animation: slideInLeft 0.7s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-40px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .slide-in-right {
+    animation: slideInRight 0.7s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(40px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .pulse-neon {
+    animation: pulseNeon 2.5s ease-in-out infinite;
+  }
+
+  @keyframes pulseNeon {
+    0%, 100% { box-shadow: 0 0 15px rgba(0, 217, 255, 0.3); }
+    50% { box-shadow: 0 0 35px rgba(0, 217, 255, 0.7), 0 0 60px rgba(212, 0, 255, 0.3); }
+  }
+
+  /* Neon glow text */
+  .text-neon-blue {
+    color: var(--azul-neon);
+    text-shadow: 0 0 10px rgba(0, 217, 255, 0.8), 0 0 20px rgba(0, 217, 255, 0.4);
+  }
+
+  .text-neon-pink {
+    color: var(--rosa-neon);
+    text-shadow: 0 0 10px rgba(212, 0, 255, 0.8), 0 0 20px rgba(212, 0, 255, 0.4);
+  }
+
+  .text-neon-gold {
+    color: var(--amarelo-ouro);
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.4);
+  }
+
+  /* Neon badge */
+  .badge-neon {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border: 1px solid rgba(0, 217, 255, 0.4);
+    background: rgba(0, 217, 255, 0.08);
+    color: var(--azul-neon);
+  }
+
+  /* Responsive font sizes */
+  @media (max-width: 640px) {
+    .text-display { font-size: 2rem; line-height: 1.2; }
+    .text-heading { font-size: 1.5rem; line-height: 1.3; }
+  }
+
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .text-display { font-size: 3rem; line-height: 1.2; }
+    .text-heading { font-size: 2rem; line-height: 1.3; }
+  }
+
+  @media (min-width: 1025px) {
+    .text-display { font-size: 3.5rem; line-height: 1.1; }
+    .text-heading { font-size: 2.25rem; line-height: 1.3; }
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ─── MOBILE RESPONSIVENESS FIXES ─── */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Prevent any element from causing horizontal scroll */
+* {
+  max-width: 100%;
+}
+
+/* Fix images overflow on mobile */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Mobile-specific layout fixes */
+@media (max-width: 640px) {
+  /* Reduce hero padding on mobile */
+  section {
+    overflow-x: hidden;
+  }
+
+  /* Fix grid columns that might overflow */
+  .grid {
+    overflow-x: hidden;
+  }
+
+  /* Ensure buttons don't overflow */
+  button, a {
+    max-width: 100%;
+    word-break: break-word;
+  }
+
+  /* Fix large text on mobile */
+  h1 {
+    font-size: clamp(1.75rem, 7vw, 3.5rem) !important;
+    line-height: 1.15 !important;
+  }
+
+  h2 {
+    font-size: clamp(1.5rem, 6vw, 2.5rem) !important;
+    line-height: 1.2 !important;
+  }
+
+  /* Fix hero section on mobile */
+  .min-h-screen {
+    min-height: 100svh;
+  }
+
+  /* Fix particles canvas on mobile */
+  canvas {
+    max-width: 100vw !important;
+  }
+}
+
+/* Tablet fixes */
+@media (max-width: 1024px) {
+  /* Ensure grid items don't overflow */
+  .grid > * {
+    min-width: 0;
+  }
+}
+
+/* ─── MOBILE OVERFLOW FIX ─── */
+html, body, #root {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+section, header, footer, main {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Garantir que botões não ultrapassem a largura da tela em mobile */
+@media (max-width: 640px) {
+  button {
+    max-width: 100%;
+    word-break: break-word;
+  }
+
+  /* Evitar que grids com gap causem overflow */
+  .grid {
+    max-width: 100%;
+  }
+
+  /* Textos muito grandes em mobile */
+  h1 {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* Cards com padding excessivo em mobile */
+  .rounded-2xl {
+    overflow: hidden;
+  }
+}
+
+/* ─── LINK IMPORT MISSING FIX ─── */
+a {
+  text-decoration: none;
+}
