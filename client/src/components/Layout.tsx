@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import ParticlesEffect from '@/components/ParticlesEffect';
 import WhatsAppButton from '@/components/WhatsAppButton';
+import ConciergeWidget from '@/components/ConciergeWidget';
 import JinglePlayer from '@/components/JinglePlayer';
 import { Link, useLocation } from 'wouter';
 import { Menu, X, ChevronDown } from 'lucide-react';
@@ -708,7 +709,6 @@ export default function Layout({ children }: LayoutProps) {
     <div style={{ background: '#0a0819', minHeight: '100vh', color: '#fff', position: 'relative' }}>
       <ParticlesEffect />
       <Header />
-      {/* pt-14 = header (56px) no desktop; no mobile pt-24 = header (56px) + barra horizontal (~40px) */}
       <main
         style={{ position: 'relative', zIndex: 1 }}
         className="pt-14 lg:pt-14"
@@ -718,6 +718,7 @@ export default function Layout({ children }: LayoutProps) {
         {children}
       </main>
       <Footer />
+      <ConciergeWidget />
       <WhatsAppButton />
     </div>
   );
