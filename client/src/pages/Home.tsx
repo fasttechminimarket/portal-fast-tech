@@ -1,6 +1,10 @@
 import { Link } from 'wouter';
 import Layout from '@/components/Layout';
 import { ShoppingCart, Tv, Droplets, CheckCircle, Star, Building2, Home as HomeIcon, ArrowRight, Zap } from 'lucide-react';
+import SindicoFunnel from '@/components/SindicoFunnel';
+import IndicationMachine from '@/components/IndicationMachine';
+import MidiaIndoorFunnel from '@/components/MidiaIndoorFunnel';
+import NeonOverlay from '@/components/NeonOverlay';
 
 /**
  * HOME PAGE - Fast&Tech Soluções
@@ -30,6 +34,7 @@ export default function Home() {
           }}
         />
         <div className="absolute inset-0 z-0" style={{ background: 'rgba(10,8,25,0.78)' }} />
+        <NeonOverlay />
         {/* Partículas decorativas */}
         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
           {[...Array(6)].map((_, i) => (
@@ -691,6 +696,15 @@ export default function Home() {
           </div>
         </div>
       </section>
+      {/* ─── MÓDULO 2: FUNIL DO SÍNDICO ─── */}
+      <SindicoFunnel />
+
+      {/* ─── MÓDULO 3: MÁQUINA DE INDICAÇÃO ─── */}
+      <IndicationMachine />
+
+      {/* ─── MÓDULO 5: FUNIL DA MÍDIA INDOOR ─── */}
+      <MidiaIndoorFunnel />
+
     </Layout>
   );
 }
