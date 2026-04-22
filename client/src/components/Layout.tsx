@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import ParticlesEffect from '@/components/ParticlesEffect';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import ConciergeWidget from '@/components/ConciergeWidget';
 import JinglePlayer from '@/components/JinglePlayer';
@@ -705,9 +704,82 @@ function Footer() {
 interface LayoutProps { children: React.ReactNode; }
 
 export default function Layout({ children }: LayoutProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    let raf = 0, frame = 0, mx = 0.5, my = 0.5;
+    let W = window.innerWidth, H = window.innerHeight;
+    canvas.width = W; canvas.height = H;
+    const SPACING = 44;
+    const xs: number[] = [], ys: number[] = [], phases: number[] = [], speeds: number[] = [], sizes: number[] = [];
+    function buildGrid() {
+      xs.length=0;ys.length=0;phases.length=0;speeds.length=0;sizes.length=0;
+      for (let r=0;r<Math.ceil(H/SPACING)+2;r++)
+        for (let c=0;c<Math.ceil(W/SPACING)+2;c++) {
+          xs.push(c*SPACING+(Math.random()-.5)*6);
+          ys.push(r*SPACING+(Math.random()-.5)*6);
+          phases.push(Math.random()*Math.PI*2);
+          speeds.push(.006+Math.random()*.005);
+          sizes.push(Math.random()*1.2+.4);
+        }
+    }
+    buildGrid();
+    const lC=['#00d9ff','#d400ff','#00d9ff','#d400ff'];
+    const lY=[H*.22,H*.40,H*.58,H*.76];
+    const lA=[12,15,11,14], lF=[.007,.009,.006,.008], lP=[0,1.5,3,4.5], lT=[0,.25,.5,.75];
+    const onR=()=>{W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;buildGrid();lY[0]=H*.22;lY[1]=H*.40;lY[2]=H*.58;lY[3]=H*.76;};
+    const onM=(e:MouseEvent)=>{mx=e.clientX/W;my=e.clientY/H;};
+    window.addEventListener('resize',onR);
+    window.addEventListener('mousemove',onM);
+    function loop() {
+      frame++;
+      ctx.clearRect(0,0,W,H);
+      const pulse=(Math.sin(frame*.025)+1)/2;
+      ctx.save();ctx.globalAlpha=.06+pulse*.04;
+      const g1=ctx.createRadialGradient(mx*W,my*H,0,mx*W,my*H,220);
+      g1.addColorStop(0,'#00d9ff');g1.addColorStop(1,'transparent');
+      ctx.fillStyle=g1;ctx.fillRect(0,0,W,H);ctx.restore();
+      ctx.save();ctx.globalAlpha=.04+pulse*.03;
+      const g2=ctx.createRadialGradient(W*.8,H*.8,0,W*.8,H*.8,260);
+      g2.addColorStop(0,'#d400ff');g2.addColorStop(1,'transparent');
+      ctx.fillStyle=g2;ctx.fillRect(0,0,W,H);ctx.restore();
+      const t=frame*.018;
+      for(let i=0;i<xs.length;i++){
+        const x=xs[i]+Math.sin(t*speeds[i]*60+phases[i])*2.5;
+        const y=ys[i]+Math.cos(t*speeds[i]*40+phases[i])*2.5;
+        const dx=x/W-mx,dy=y/H-my;
+        const dist=Math.sqrt(dx*dx+dy*dy);
+        const glow=Math.max(0,1-dist*3.5);
+        ctx.save();ctx.globalAlpha=.07+glow*.4;
+        if(glow>.1){ctx.shadowBlur=8+glow*14;ctx.shadowColor='#00d9ff';}
+        ctx.fillStyle=glow>.25?'#00d9ff':'#3344aa';
+        ctx.beginPath();ctx.arc(x,y,sizes[i]+glow*2,0,Math.PI*2);ctx.fill();ctx.restore();
+      }
+      for(let i=0;i<4;i++){
+        lT[i]+=.003;
+        const a=(Math.sin(lT[i]*Math.PI*2)+1)/2;
+        ctx.save();ctx.globalAlpha=a*.10;ctx.strokeStyle=lC[i];ctx.lineWidth=1;
+        ctx.shadowBlur=5;ctx.shadowColor=lC[i];ctx.beginPath();
+        for(let x=0;x<=W;x+=4){const y=lY[i]+Math.sin(x*lF[i]+frame*.02+lP[i])*lA[i];x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+        ctx.stroke();ctx.restore();
+        const tx=(lT[i]*.3%1)*W;
+        const ty=lY[i]+Math.sin(tx*lF[i]+frame*.02+lP[i])*lA[i];
+        ctx.save();ctx.globalAlpha=.8;ctx.shadowBlur=16;ctx.shadowColor=lC[i];ctx.fillStyle=lC[i];
+        ctx.beginPath();ctx.arc(tx,ty,2.5,0,Math.PI*2);ctx.fill();ctx.restore();
+      }
+      raf=requestAnimationFrame(loop);
+    }
+    loop();
+    return()=>{cancelAnimationFrame(raf);window.removeEventListener('resize',onR);window.removeEventListener('mousemove',onM);};
+  }, []);
+
   return (
     <div style={{ background: '#0a0819', minHeight: '100vh', color: '#fff', position: 'relative' }}>
-      <ParticlesEffect />
+      <canvas ref={canvasRef} style={{position:'fixed',top:0,left:0,width:'100vw',height:'100vh',pointerEvents:'none',zIndex:9,opacity:.85}} />
       <Header />
       <main
         style={{ position: 'relative', zIndex: 1 }}
