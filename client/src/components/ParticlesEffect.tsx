@@ -1,153 +1,149 @@
 import { useEffect, useRef } from 'react';
 
 export default function ParticlesEffect() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animRef = useRef<number>(0);
+  const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
+    const canvas = ref.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    let W = 0, H = 0, frame = 0, scanX = 0;
-    let mx = 0.5, my = 0.5, tmx = 0.5, tmy = 0.5;
+    let raf = 0;
+    let frame = 0;
+    let mx = 0.5;
+    let my = 0.5;
+    let W = window.innerWidth;
+    let H = window.innerHeight;
+    canvas.width = W;
+    canvas.height = H;
 
-    const resize = () => {
+    const SPACING = 44;
+    const xs: number[] = [];
+    const ys: number[] = [];
+    const phases: number[] = [];
+    const speeds: number[] = [];
+    const sizes: number[] = [];
+
+    function buildGrid() {
+      xs.length = 0; ys.length = 0;
+      phases.length = 0; speeds.length = 0; sizes.length = 0;
+      for (let r = 0; r < Math.ceil(H / SPACING) + 2; r++) {
+        for (let c = 0; c < Math.ceil(W / SPACING) + 2; c++) {
+          xs.push(c * SPACING + (Math.random() - 0.5) * 6);
+          ys.push(r * SPACING + (Math.random() - 0.5) * 6);
+          phases.push(Math.random() * Math.PI * 2);
+          speeds.push(0.006 + Math.random() * 0.005);
+          sizes.push(Math.random() * 1.2 + 0.4);
+        }
+      }
+    }
+    buildGrid();
+
+    const lColors = ['#00d9ff', '#d400ff', '#00d9ff', '#d400ff'];
+    const lY = [H * 0.22, H * 0.40, H * 0.58, H * 0.76];
+    const lAmp = [12, 15, 11, 14];
+    const lFreq = [0.007, 0.009, 0.006, 0.008];
+    const lPhase = [0, 1.5, 3, 4.5];
+    const lT = [0, 0.25, 0.5, 0.75];
+
+    window.addEventListener('resize', () => {
       W = canvas.width = window.innerWidth;
       H = canvas.height = window.innerHeight;
-    };
-    resize();
-    window.addEventListener('resize', resize);
-    window.addEventListener('mousemove', (e) => { tmx = e.clientX / W; tmy = e.clientY / H; });
+      buildGrid();
+      lY[0] = H * 0.22; lY[1] = H * 0.40; lY[2] = H * 0.58; lY[3] = H * 0.76;
+    });
 
-    const COLS = ['#00d9ff','#00d9ff','#ff40ff','#ffd700','#ff006e','#00d9ff'];
+    window.addEventListener('mousemove', (e) => {
+      mx = e.clientX / W;
+      my = e.clientY / H;
+    });
 
-    interface Trail { x: number; y: number; }
-    interface P {
-      x:number;y:number;vx:number;vy:number;sz:number;
-      color:string;alpha:number;maxAlpha:number;
-      life:number;maxLife:number;trail:Trail[];
-    }
-
-    const mkP = (): P => {
-      const s = Math.random() > 0.5 ? 0 : 1;
-      const x = s===0 ? Math.random()*W*0.5 : W*0.45+Math.random()*W*0.5;
-      const y = s===0 ? H*0.1+Math.random()*H*0.55 : H*0.42+Math.random()*H*0.45;
-      const vx = s===0 ? 1.3+Math.random()*1.2 : 1.1+Math.random()*1.0;
-      const vy = s===0 ? -(0.4+Math.random()*0.65) : -(0.5+Math.random()*0.7);
-      return { x, y, vx, vy, sz: Math.random()*2.2+0.6,
-        color: COLS[Math.floor(Math.random()*COLS.length)],
-        alpha: 0, maxAlpha: Math.random()*0.7+0.25,
-        life: 0, maxLife: Math.random()*140+70, trail: [] };
-    };
-
-    interface R { x1:number;y1:number;x2:number;y2:number;t:number;maxT:number;color:string;w:number; }
-
-    const mkR = (): R => {
-      const maxT = Math.random()*100+55;
-      const s = Math.floor(Math.random()*4);
-      const bases = [
-        {x1:20,     y1:H*0.28, dx:W*0.38, dy:-H*0.22},
-        {x1:60,     y1:H*0.42, dx:W*0.32, dy:-H*0.18},
-        {x1:W*0.5,  y1:H*0.56, dx:W*0.36, dy:-H*0.26},
-        {x1:W*0.56, y1:H*0.70, dx:W*0.30, dy:-H*0.22},
-      ];
-      const b = bases[s%4];
-      return {
-        x1: b.x1+Math.random()*50, y1: b.y1+Math.random()*35,
-        x2: b.x1+b.dx+Math.random()*50, y2: b.y1+b.dy+Math.random()*35,
-        t: 0, maxT, color: Math.random()>0.5?'#00d9ff':'#ff40ff',
-        w: Math.random()*1.8+0.5,
-      };
-    };
-
-    const particles: P[] = Array.from({length:90}, mkP);
-    const rays: R[] = Array.from({length:10}, () => { const r=mkR(); r.t=Math.random()*r.maxT; return r; });
-
-    const animate = () => {
+    function loop() {
       frame++;
-      mx += (tmx-mx)*0.05; my += (tmy-my)*0.05;
-      ctx.clearRect(0,0,W,H);
+      ctx.clearRect(0, 0, W, H);
+      const pulse = (Math.sin(frame * 0.025) + 1) / 2;
 
-      // Scan diagonal
-      scanX = (scanX+1.2)%(W+H);
-      ctx.save(); ctx.globalAlpha=0.10; ctx.strokeStyle='#00d9ff'; ctx.lineWidth=2;
-      ctx.shadowBlur=8; ctx.shadowColor='#00d9ff';
-      ctx.beginPath(); ctx.moveTo(scanX-H,0); ctx.lineTo(scanX,H); ctx.stroke();
-      ctx.restore();
-
-      // Pulso nas setas
-      const pulse = (Math.sin(frame*0.035)+1)/2;
-      const pulse2 = (Math.sin(frame*0.028+1.5)+1)/2;
+      // Glow do mouse
       ctx.save();
-      ctx.globalAlpha = 0.04+pulse*0.07;
-      const g1 = ctx.createLinearGradient(0,H,W*0.5,0);
-      g1.addColorStop(0,'#00d9ff'); g1.addColorStop(1,'transparent');
-      ctx.fillStyle=g1; ctx.fillRect(0,0,W,H);
-      ctx.globalAlpha = 0.03+pulse2*0.06;
-      const g2 = ctx.createLinearGradient(W,H,W*0.5,H*0.35);
-      g2.addColorStop(0,'#ff40ff'); g2.addColorStop(1,'transparent');
-      ctx.fillStyle=g2; ctx.fillRect(0,0,W,H);
+      ctx.globalAlpha = 0.06 + pulse * 0.04;
+      const g1 = ctx.createRadialGradient(mx * W, my * H, 0, mx * W, my * H, 220);
+      g1.addColorStop(0, '#00d9ff'); g1.addColorStop(1, 'transparent');
+      ctx.fillStyle = g1; ctx.fillRect(0, 0, W, H);
       ctx.restore();
 
-      // Reflexo do cursor
-      ctx.save(); ctx.globalAlpha=0.06+pulse*0.04;
-      const gc = ctx.createRadialGradient(mx*W,my*H,0,mx*W,my*H,180);
-      gc.addColorStop(0,'#00d9ff'); gc.addColorStop(1,'transparent');
-      ctx.fillStyle=gc; ctx.fillRect(0,0,W,H); ctx.restore();
+      // Glow roxo fixo
+      ctx.save();
+      ctx.globalAlpha = 0.04 + pulse * 0.03;
+      const g2 = ctx.createRadialGradient(W * 0.8, H * 0.8, 0, W * 0.8, H * 0.8, 260);
+      g2.addColorStop(0, '#d400ff'); g2.addColorStop(1, 'transparent');
+      ctx.fillStyle = g2; ctx.fillRect(0, 0, W, H);
+      ctx.restore();
 
-      // Partículas
-      particles.forEach(p => {
-        p.trail.push({x:p.x,y:p.y}); if(p.trail.length>10) p.trail.shift();
-        p.x+=p.vx+(mx-0.5)*0.4; p.y+=p.vy+(my-0.5)*0.25; p.life++;
-        if(p.alpha<p.maxAlpha) p.alpha+=0.04;
-        if(p.life>p.maxLife*0.65) p.alpha-=p.maxAlpha/(p.maxLife*0.35);
-        if(p.life>=p.maxLife||p.alpha<0) Object.assign(p,mkP());
-        p.trail.forEach((t,i)=>{
-          ctx.save(); ctx.globalAlpha=Math.max(0,p.alpha*(i/p.trail.length)*0.4);
-          ctx.shadowBlur=5; ctx.shadowColor=p.color; ctx.fillStyle=p.color;
-          ctx.beginPath(); ctx.arc(t.x,t.y,p.sz*(i/p.trail.length)*0.8,0,Math.PI*2); ctx.fill(); ctx.restore();
-        });
-        ctx.save(); ctx.globalAlpha=Math.max(0,p.alpha);
-        ctx.shadowBlur=14; ctx.shadowColor=p.color; ctx.fillStyle=p.color;
-        ctx.beginPath(); ctx.arc(p.x,p.y,p.sz,0,Math.PI*2); ctx.fill(); ctx.restore();
-      });
-
-      // Raios de energia
-      rays.forEach(r => {
-        r.t++; if(r.t>r.maxT) Object.assign(r,mkR());
-        const prog=r.t/r.maxT;
-        const ease=prog<0.5?2*prog*prog:1-Math.pow(-2*prog+2,2)/2;
-        const tail=Math.max(0,ease-0.18);
-        const cx=r.x1+(r.x2-r.x1)*ease, cy=r.y1+(r.y2-r.y1)*ease;
-        const tx=r.x1+(r.x2-r.x1)*tail, ty=r.y1+(r.y2-r.y1)*tail;
-        const a=(1-Math.abs(prog-0.5)*2)*0.9;
-        ctx.save(); ctx.globalAlpha=a; ctx.shadowBlur=18; ctx.shadowColor=r.color;
-        ctx.strokeStyle=r.color; ctx.lineWidth=r.w; ctx.lineCap='round';
-        ctx.beginPath(); ctx.moveTo(tx,ty); ctx.lineTo(cx,cy); ctx.stroke();
-        ctx.fillStyle=r.color; ctx.beginPath(); ctx.arc(cx,cy,2.5,0,Math.PI*2); ctx.fill();
+      // Grid de pontos
+      const t = frame * 0.018;
+      for (let i = 0; i < xs.length; i++) {
+        const x = xs[i] + Math.sin(t * speeds[i] * 60 + phases[i]) * 2.5;
+        const y = ys[i] + Math.cos(t * speeds[i] * 40 + phases[i]) * 2.5;
+        const dx = x / W - mx;
+        const dy = y / H - my;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const glow = Math.max(0, 1 - dist * 3.5);
+        ctx.save();
+        ctx.globalAlpha = 0.07 + glow * 0.4;
+        if (glow > 0.1) { ctx.shadowBlur = 8 + glow * 14; ctx.shadowColor = '#00d9ff'; }
+        ctx.fillStyle = glow > 0.25 ? '#00d9ff' : '#3344aa';
+        ctx.beginPath();
+        ctx.arc(x, y, sizes[i] + glow * 2, 0, Math.PI * 2);
+        ctx.fill();
         ctx.restore();
-      });
+      }
 
-      animRef.current = requestAnimationFrame(animate);
-    };
+      // Linhas de energia + ponto viajante
+      for (let i = 0; i < 4; i++) {
+        lT[i] += 0.003;
+        const a = (Math.sin(lT[i] * Math.PI * 2) + 1) / 2;
+        ctx.save();
+        ctx.globalAlpha = a * 0.10;
+        ctx.strokeStyle = lColors[i];
+        ctx.lineWidth = 1;
+        ctx.shadowBlur = 5; ctx.shadowColor = lColors[i];
+        ctx.beginPath();
+        for (let x = 0; x <= W; x += 4) {
+          const y = lY[i] + Math.sin(x * lFreq[i] + frame * 0.02 + lPhase[i]) * lAmp[i];
+          x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        ctx.restore();
 
-    animate();
-    return () => { cancelAnimationFrame(animRef.current); window.removeEventListener('resize', resize); };
+        const tx = (lT[i] * 0.3 % 1) * W;
+        const ty = lY[i] + Math.sin(tx * lFreq[i] + frame * 0.02 + lPhase[i]) * lAmp[i];
+        ctx.save();
+        ctx.globalAlpha = 0.8;
+        ctx.shadowBlur = 16; ctx.shadowColor = lColors[i];
+        ctx.fillStyle = lColors[i];
+        ctx.beginPath(); ctx.arc(tx, ty, 2.5, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+      }
+
+      raf = requestAnimationFrame(loop);
+    }
+    loop();
+
+    return () => { cancelAnimationFrame(raf); };
   }, []);
 
   return (
     <canvas
-      ref={canvasRef}
+      ref={ref}
       style={{
         position: 'fixed',
-        inset: 0,
-        width: '100%',
-        height: '100%',
+        top: 0, left: 0,
+        width: '100vw',
+        height: '100vh',
         pointerEvents: 'none',
-        zIndex: 5,
-        opacity: 0.75,
+        zIndex: 9999,
+        opacity: 0.85,
       }}
     />
   );
